@@ -1,0 +1,31 @@
+# Import libraries we need
+import numpy as np  # For math and numbers
+import matplotlib.pyplot as plt  # For making graphs
+from mpl_toolkits.mplot3d import Axes3D  # For 3D plots
+import scipy.io  # To load .mat files
+import pandas as pd  # For organizing data
+
+# Load the dataset (example: B0005 battery file)
+data = scipy.io.loadmat('B0005.mat')  # Replace with actual file path
+
+# Extract EIS data (assuming it's in the dataset under 'impedance' key)
+impedance_data = data['B0005']['measurement'][0,0]['impedance'][0,0]
+cycles = impedance_data['cycle'][0]  # Cycle numbers
+real_z = impedance_data['Re'][0]  # Real impedance (R(Z))
+imag_z = impedance_data['Im'][0]  # Imaginary impedance (Im(Z))
+
+# Create a 3D plot
+fig = plt.figure(figsize=(10, 7))  # Make a new figure, set size
+ax = fig.add_subplot(111, projection='3d')  # Add a 3D axis
+
+# Plot the data: X = R(Z), Y = Im(Z), Z = cycle count
+ax.scatter(real_z, imag_z, cycles, c='b', marker='o')  # Scatter points in blue
+
+# Label the axes
+ax.set_xlabel('Real Impedance (R(Z))')
+ax.set_ylabel('Imaginary Impedance (Im(Z))')
+ax.set_zlabel('Cycle Count')
+
+# Show the plot
+plt.title('3D EIS Impedance vs Aging')
+plt.show()

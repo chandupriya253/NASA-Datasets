@@ -1,0 +1,38 @@
+# Import libraries we need
+import numpy as np  # For math and numbers
+import matplotlib.pyplot as plt  # For making graphs
+from mpl_toolkits.mplot3d import Axes3D  # For 3D plots
+import scipy.io  # To load .mat files
+import pandas as pd  # For organizing data
+
+# Load the dataset (example: B0005 battery file)
+data = scipy.io.loadmat('B0005.mat')  # Replace with actual file path
+
+# Extract charge/discharge data (assuming it's under 'charge' key)
+charge_data = data['B0005']['measurement'][0,0]['charge'][0,0]
+voltage = charge_data['Voltage_measured'][0]  # Voltage (V)
+capacity = charge_data['Capacity'][0]  # Capacity (Q)
+cycles = charge_data['cycle'][0]  # Cycle numbers
+
+# Calculate dQ/dV (rate of capacity change per voltage)
+dQ_dV = np.gradient(capacity, voltage)  # Simple derivative
+
+# Plot 2D dQ/dV vs V for one cycle (e.g., cycle 1)
+plt.figure(figsize=(8, 5))
+plt.plot(voltage, dQ_dV, 'r-')  # Red line
+plt.xlabel('Voltage (V)')
+plt.ylabel('dQ/dV')
+plt.title('Incremental Capacity Analysis (Cycle 1)')
+plt.show()
+
+# 3D plot for peaks across cycles
+fig = plt.figure(figsize=(10, 7))
+ax = fig.add_subplot(111, projection='3d')
+for i in range(len(cycles)):
+    dQ_dV_i = np.gradient(capacity[i], voltage[i])  # dQ/dV per cycle
+    ax.plot(voltage[i], dQ_dV_i, zs=cycles[i], zdir='z')  # Plot each cycle
+ax.set_xlabel('Voltage (V)')
+ax.set_ylabel('dQ/dV')
+ax.set_zlabel('Cycle Count')
+plt.title('3D dQ/dV Peaks vs Aging')
+plt.show()
